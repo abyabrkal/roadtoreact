@@ -2,7 +2,7 @@
 
 
 
-![Cosmos](../public/cos.jpg "Cosmos")
+![Cosmos](/public/cos.jpg "Cosmos")
 
 
 
