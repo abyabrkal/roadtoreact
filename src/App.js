@@ -77,8 +77,7 @@ class App extends React.Component {
 
 
 
-function Search ({ value, onChange, children }) {
-  return (
+const Search = ({ value, onChange, children }) =>
     <form>
         <label>{children} </label>
         <input
@@ -87,8 +86,6 @@ function Search ({ value, onChange, children }) {
           onChange={onChange}
         />
       </form>
-  )
-}
 
 
 class Table extends React.Component {
