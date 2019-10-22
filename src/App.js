@@ -23,11 +23,9 @@ const list = [
 
 
 
-function isSearched(searchTerm) {
-  return function(item) {
-    return item.title.toLowerCase().includes(searchTerm.toLowerCase());
-  };
-}
+const isSearched = (searchTerm) => (item) =>
+    item.title.toLowerCase().includes(searchTerm.toLowerCase());
+
 
 
 // APP
@@ -36,7 +34,8 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      list
+      list, 
+      searchTerm: ''
     };
 
     this.onDismiss = this.onDismiss.bind(this);
@@ -48,7 +47,6 @@ class App extends React.Component {
 
     this.setState({
       list: updatedList,
-      searchTerm: ''
     });
   }
 
@@ -57,7 +55,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { list, searchTerm } = this.state;
+    const { searchTerm, list } = this.state;
 
     return (
       <div className="App">
@@ -65,7 +63,7 @@ class App extends React.Component {
         <Search
           value={searchTerm}
           onChange={this.onSearchChange}
-        />
+        >Search</Search>
         <hr />
         <Table 
           list={list}
@@ -80,11 +78,11 @@ class App extends React.Component {
 
 class Search extends React.Component {
   render() {
-    const {value, onChange} = this.props;
+    const {value, onChange, children} = this.props;
 
     return (
       <form>
-          <label>Search </label>
+          <label>{children} </label>
           <input
             type="text"
             value={value}
@@ -98,10 +96,12 @@ class Search extends React.Component {
 
 class Table extends React.Component {
   render() {
-    const { list, pattern, onDismiss} = this.props;
+    const { list, pattern, onDismiss } = this.props;
 
+    console.log(this.props)
     return (
-      {list.filter(isSearched(pattern)).map(item => 
+      <div>
+      { list.filter(isSearched(pattern)).map(item => 
         <div key={item.objectID}>
           <span>
             <a href={item.url}>{item.title}</a>
@@ -119,7 +119,8 @@ class Table extends React.Component {
           </span>
         </div>
       )}
-    )
+      </div>
+    );
   }
 }
 
