@@ -76,21 +76,18 @@ class App extends React.Component {
 }
 
 
-class Search extends React.Component {
-  render() {
-    const {value, onChange, children} = this.props;
 
-    return (
-      <form>
-          <label>{children} </label>
-          <input
-            type="text"
-            value={value}
-            onChange={onChange}
-          />
-        </form>
-    )
-  }
+function Search ({ value, onChange, children }) {
+  return (
+    <form>
+        <label>{children} </label>
+        <input
+          type="text"
+          value={value}
+          onChange={onChange}
+        />
+      </form>
+  )
 }
 
 
