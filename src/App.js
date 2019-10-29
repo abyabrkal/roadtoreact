@@ -29,10 +29,10 @@ class App extends React.Component {
   }
 
   onDismiss(id) {
-    const updatedList = this.state.list.filter(item => item.objectID !== id);
+    const updatedHits = this.state.result.hits.filter(item => item.objectID !== id);
 
     this.setState({
-      list: updatedList,
+      result: Object.assign({}, this.state.result, {hits: updatedHits }),
     });
   }
 
