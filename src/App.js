@@ -35,11 +35,17 @@ class App extends React.Component {
       searchTerm: DEFAULT_QUERY,
     };
 
+
+    this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
     this.setSearchTopStories = this.setSearchTopStories.bind(this);
     this.fetchSearchTopStories = this.fetchSearchTopStories.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
+  }
+
+  needsToSearchTopStories(searchTerm) {
+    return !this.state.results[searchTerm];
   }
 
   // Fetch function from HNApi
@@ -62,7 +68,11 @@ class App extends React.Component {
   onSearchSubmit(e) {
     const { searchTerm } = this.state;
     this.setState({ searchKey: searchTerm})
-    this.fetchSearchTopStories(searchTerm);
+    
+    if(this.needsToSearchTopStories(searchTerm)){
+      this.fetchSearchTopStories(searchTerm);
+    }
+    
     e.preventDefault();
   }
 
@@ -77,7 +87,7 @@ class App extends React.Component {
     const { searchKey, results } = this.state;
     const { hits, page } = results[searchKey];
 
-    const updatedHits = this.state.results.hits.filter(item => item.objectID !== id);
+    const updatedHits = hits.filter(item => item.objectID !== id);
 
     this.setState({
       // result: Object.assign({}, this.state.result, {hits: updatedHits }),
