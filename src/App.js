@@ -6,6 +6,8 @@ const DEFAULT_QUERY = 'redux';
 const PATH_BASE = 'https://hn.algolia.com/api/v1';
 const PATH_SEARCH = '/search';
 const PARAM_SEARCH = 'query=';
+const PARAM_PAGE = 'page=';
+const DEFAULT_HPP = 'hitsPerPage=';
 
 
 
@@ -27,8 +29,8 @@ class App extends React.Component {
     this.onDismiss = this.onDismiss.bind(this);
   }
 
-  fetchSearchTopStories(searchTerm) {
-    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`)
+  fetchSearchTopStories(searchTerm, page = 0) {
+    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}`)
       .then(response => response.json())
       .then(result => this.setSearchTopStories(result))
       .catch(error => error)
@@ -52,7 +54,19 @@ class App extends React.Component {
   }
 
   setSearchTopStories(result) {
-    this.setState({ result });
+    const { hits, page } = result;
+
+    const oldHits = page !== 0 ?
+          this.state.results.hits : [];
+
+    const updatedHits = [
+      ...oldHits,
+      ...hits
+    ];
+
+    this.setState({ 
+      result: {hits: updatedHits, page} 
+    });
   }
 
 
@@ -70,7 +84,7 @@ class App extends React.Component {
 
   render() {
     const { searchTerm, result } = this.state;
-    console.log(result)
+    const page = (result && result.page) || 0;
 
     // if (!result) return null;
 
@@ -86,13 +100,17 @@ class App extends React.Component {
           <hr />
         </div>
         {
-          result ? 
-            <Table 
-              list={result.hits}
-              onDismiss={this.onDismiss}
-            />
-          : null
+          result && 
+          <Table 
+            list={result.hits}
+            onDismiss={this.onDismiss}
+          />
         }
+        <div className="interactions">
+          <Button
+            onClick={() => this.fetchSearchTopStories(searchTerm, page + 1)}
+          >More</Button>
+        </div>
       </div>
     );
   }
