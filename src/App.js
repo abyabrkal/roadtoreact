@@ -28,8 +28,10 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
+    // state updates to includes multiple results based on each searchterm
     this.state = {
-      result: null, 
+      results: null, 
+      searchKey: '',
       searchTerm: DEFAULT_QUERY,
     };
 
@@ -48,10 +50,18 @@ class App extends React.Component {
       .catch(error => error)
   }
 
+ // fetch data from server on mount
+ componentDidMount() {
+  const { searchTerm } = this.state;
+  this.setState({ searchKey: searchTerm })
+  this.fetchSearchTopStories(searchTerm);
+}
+
+
   // call for server data and get results on Submit button click
   onSearchSubmit(e) {
     const { searchTerm } = this.state;
-
+    this.setState({ searchKey: searchTerm})
     this.fetchSearchTopStories(searchTerm);
     e.preventDefault();
   }
@@ -61,31 +71,34 @@ class App extends React.Component {
     this.setState({ searchTerm: event.target.value });
   }
 
-  // fetch data from server on mount
-  componentDidMount() {
-    const { searchTerm } = this.state;
-
-    this.fetchSearchTopStories(searchTerm);
-  }
-
-
+ 
   // OnDismiss - 
   onDismiss(id) {
-    const updatedHits = this.state.result.hits.filter(item => item.objectID !== id);
+    const { searchKey, results } = this.state;
+    const { hits, page } = results[searchKey];
+
+    const updatedHits = this.state.results.hits.filter(item => item.objectID !== id);
 
     this.setState({
       // result: Object.assign({}, this.state.result, {hits: updatedHits }),
-      result: { ...this.state.result, hits: updatedHits }
+      //result: { ...this.state.results, hits: updatedHits }
+      ...results,
+      [searchKey]: { hits: updatedHits, page }
     });
   }
 
   setSearchTopStories(result) {
     const { hits, page } = result;
+    const { searchKey, results } = this.state;
 
     // if page is not 0, return the avialable hits or
     // return empty array if this is new request via ComponentDidMount
-    const oldHits = page !== 0 ?
-          this.state.results.hits : [];
+    //const oldHits = page !== 0 ?
+    //      this.state.results.hits : [];
+    const oldHits = results && results[searchKey] 
+      ? results[searchKey].hits
+      : [];
+
 
     // Merge old hits and new hits from next page
     const updatedHits = [
@@ -93,9 +106,14 @@ class App extends React.Component {
       ...hits
     ];
 
+
     // update the hits data and new page number to state
     this.setState({ 
-      result: {hits: updatedHits, page} 
+      //results: {hits: updatedHits, page} 
+      results: {
+        ...results,
+        [searchKey]: { hits: updatedHits, page }
+      }
     });
   }
 
@@ -104,9 +122,13 @@ class App extends React.Component {
 
 
   render() {
-    const { searchTerm, result } = this.state;
-    const page = (result && result.page) || 0;
-
+    const { searchTerm, results, searchKey } = this.state;
+    const page = (results &&
+                  results[searchKey] &&
+                  results[searchKey].page) || 0;
+    const list = (results &&
+                  results[searchKey] &&
+                  results[searchKey].hits) || [];
     // if (!result) return null;
 
     return (
@@ -121,9 +143,9 @@ class App extends React.Component {
           <hr />
         </div>
         {
-          result && 
+          results && 
           <Table 
-            list={result.hits}
+            list={list}
             onDismiss={this.onDismiss}
           />
         }
