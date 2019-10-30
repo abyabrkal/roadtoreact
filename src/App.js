@@ -33,7 +33,7 @@ class App extends React.Component {
 
     this.setState({
       // result: Object.assign({}, this.state.result, {hits: updatedHits }),
-      result: { ..this.state.result, hits: updatedHits }
+      result: { ...this.state.result, hits: updatedHits }
     });
   }
 
