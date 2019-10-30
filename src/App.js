@@ -58,14 +58,18 @@ class App extends React.Component {
   setSearchTopStories(result) {
     const { hits, page } = result;
 
+    // if page is not 0, return the avialable hits or
+    // return empty array if this is new request via ComponentDidMount
     const oldHits = page !== 0 ?
           this.state.results.hits : [];
 
+    // Merge old hits and new hits from next page
     const updatedHits = [
       ...oldHits,
       ...hits
     ];
 
+    // update the hits data and new page number to state
     this.setState({ 
       result: {hits: updatedHits, page} 
     });
