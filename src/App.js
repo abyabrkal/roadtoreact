@@ -61,7 +61,7 @@ class App extends React.Component {
     const { searchTerm, result } = this.state;
     console.log(result)
 
-    if (!result) return null;
+    // if (!result) return null;
 
     return (
       <div className="page">
@@ -73,11 +73,15 @@ class App extends React.Component {
           >Search</Search>
           <hr />
         </div>
-        <Table 
-          list={result.hits}
-          pattern={searchTerm}
-          onDismiss={this.onDismiss}
-        />
+        {
+          result ? 
+            <Table 
+              list={result.hits}
+              pattern={searchTerm}
+              onDismiss={this.onDismiss}
+            />
+          : null
+        }
       </div>
     );
   }
