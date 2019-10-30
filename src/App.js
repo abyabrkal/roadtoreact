@@ -12,6 +12,15 @@ const PARAM_PAGE = 'page=';
 const PARAM_HPP = 'hitsPerPage=';
 
 
+const largeColumn = {
+  width: '40%',
+}
+const midColumn = {
+  width: '30%',
+};
+const smallColumn = {
+  width: '10%',
+};
 
 
 // APP
@@ -26,11 +35,12 @@ class App extends React.Component {
 
     this.setSearchTopStories = this.setSearchTopStories.bind(this);
     this.fetchSearchTopStories = this.fetchSearchTopStories.bind(this);
-    this.onSearchSubmit = this.onSearchSubmit.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
+    this.onSearchSubmit = this.onSearchSubmit.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
   }
 
+  // Fetch function from HNApi
   fetchSearchTopStories(searchTerm, page = 0) {
     fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
       .then(response => response.json())
@@ -38,14 +48,28 @@ class App extends React.Component {
       .catch(error => error)
   }
 
-
+  // call for server data and get results on Submit button click
   onSearchSubmit(e) {
-    const {searchTerm} = this.state;
+    const { searchTerm } = this.state;
 
     this.fetchSearchTopStories(searchTerm);
     e.preventDefault();
   }
 
+  // update search term on every change to state
+  onSearchChange(event) {
+    this.setState({ searchTerm: event.target.value });
+  }
+
+  // fetch data from server on mount
+  componentDidMount() {
+    const { searchTerm } = this.state;
+
+    this.fetchSearchTopStories(searchTerm);
+  }
+
+
+  // OnDismiss - 
   onDismiss(id) {
     const updatedHits = this.state.result.hits.filter(item => item.objectID !== id);
 
@@ -76,16 +100,7 @@ class App extends React.Component {
   }
 
 
-  onSearchChange(event) {
-    this.setState({ searchTerm: event.target.value });
-  }
-
-  componentDidMount() {
-    const { searchTerm } = this.state;
-
-    this.fetchSearchTopStories(searchTerm);
-  }
-
+ 
 
 
   render() {
@@ -146,12 +161,12 @@ const Table = ({ list, onDismiss }) =>
   <div className="table">
   { list.map(item => 
     <div key={item.objectID} className="table-row">
-      <span>
+      <span style={largeColumn}>
         <a href={item.url}>{item.title}</a>
       </span>
-      <span>{item.author}</span>
-      <span>{item.num_comments}</span>
-      <span>{item.points}</span>
+      <span style={midColumn}>{item.author}</span>
+      <span style={smallColumn}>{item.num_comments}</span>
+      <span style={smallColumn}>{item.points}</span>
       <span>
         <Button
           onClick={() => onDismiss(item.objectID)}
