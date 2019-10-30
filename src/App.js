@@ -33,6 +33,7 @@ class App extends React.Component {
       results: null, 
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
+      error: null
     };
 
 
@@ -53,7 +54,7 @@ class App extends React.Component {
     fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
       .then(response => response.json())
       .then(result => this.setSearchTopStories(result))
-      .catch(error => error)
+      .catch(error => this.setState({ error }))
   }
 
  // fetch data from server on mount
@@ -132,7 +133,7 @@ class App extends React.Component {
 
 
   render() {
-    const { searchTerm, results, searchKey } = this.state;
+    const { searchTerm, results, searchKey, error } = this.state;
     const page = (results &&
                   results[searchKey] &&
                   results[searchKey].page) || 0;
@@ -140,6 +141,7 @@ class App extends React.Component {
                   results[searchKey] &&
                   results[searchKey].hits) || [];
     // if (!result) return null;
+    //if(error) return <p>Something went wrong!</p>
 
     return (
       <div className="page">
@@ -152,12 +154,15 @@ class App extends React.Component {
           >Search</Search>
           <hr />
         </div>
-        {
-          results && 
-          <Table 
+        { error
+          ? <div className="interations">
+              <p>Something went wrong!</p>
+            </div>
+          //results && 
+          : <Table 
             list={list}
             onDismiss={this.onDismiss}
-          />
+            />
         }
         <div className="interactions">
           <Button
